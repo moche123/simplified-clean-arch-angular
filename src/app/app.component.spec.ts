@@ -1,27 +1,35 @@
-import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
+import { ICrudUser } from './domain/ports/i-crud-user';
 
 describe('AppComponent', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [AppComponent]
-  }));
+  let app: AppComponent;
+
+  const mockCrudUser = {
+    getSingleUser: jasmine.createSpy('getSingleUser').and.returnValue(of({})),
+    postUser: jasmine.createSpy('postUser').and.returnValue(of([])),
+    putUser: jasmine.createSpy('putUser'),
+    deleteUser: jasmine.createSpy('deleteUser')
+  }
+
+  beforeEach(() =>{
+      app = new AppComponent(
+        <ICrudUser>(<unknown>mockCrudUser)
+      )
+  });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'crud' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('crud');
+  it('should test ngOnInit', () => {
+    app.ngOnInit();
+    expect(mockCrudUser.getSingleUser).toHaveBeenCalled();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('crud app is running!');
+  it('should test addUser', () => {
+    app.addUser();
+    expect(mockCrudUser.postUser).toHaveBeenCalled();
   });
+
 });
